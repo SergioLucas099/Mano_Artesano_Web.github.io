@@ -9,15 +9,32 @@
 </head>
 <body>
   <!-- Header -->
-  <header>
-    <div class="logo">
-      <img src="img/logo.jpeg" alt="Logo Pueblito de Barro">
-    </div>
-    <div class="bienvenida">
-      Bienvenidos al <strong>Pueblito de Barro</strong><br>
-      Aquí podrá consultar sus turnos
-    </div>
-  </header>
+<header>
+  <div class="logo">
+    <img src="img/logo.jpeg" alt="Logo Pueblito de Barro">
+  </div>
+  <div class="bienvenida" id="bienvenida">
+    Bienvenidos al <strong>Pueblito de Barro</strong><br>
+    Aquí podrá consultar sus turnos
+  </div>
+
+  <!-- Selector de idioma -->
+  <div class="language-selector">
+    <img src="img/mundo.png" alt="Idioma" id="currentLang" class="flag">
+    <ul class="dropdown" id="langDropdown">
+      <li data-lang="es"><img src="img/colombia.png" alt="Español"> Español</li>
+      <li data-lang="en"><img src="img/usa.png" alt="Inglés"> English</li>
+      <li data-lang="pt"><img src="img/portugal.png" alt="Portugués"> Português</li>
+      <li data-lang="fr"><img src="img/francia.png" alt="Francés"> Français</li>
+      <li data-lang="it"><img src="img/italia.png" alt="Italiano"> Italiano</li>
+      <li data-lang="de"><img src="img/alemania.png" alt="Alemán"> Deutsch</li>
+      <li data-lang="ko"><img src="img/corea.png" alt="Coreano"> 한국어</li>
+      <li data-lang="ja"><img src="img/japon.png" alt="Japonés"> 日本語</li>
+      <li data-lang="zh"><img src="img/china.png" alt="Mandarín"> 中文</li>
+      <li data-lang="ru"><img src="img/rusia.png" alt="Ruso"> Русский</li>
+    </ul>
+  </div>
+</header>
 
   <!-- Contenedor principal -->
   <main class="contenedor">
