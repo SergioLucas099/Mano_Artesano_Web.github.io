@@ -117,11 +117,10 @@ button:hover {
 .language-selector {
   position: fixed;
   top: 15px;
-  left: 50px;
+  right: 15px;  /* Botón en la esquina superior derecha */
   display: inline-block;
   z-index: 1000;
 }
-
 
 .flag {
   width: 40px;
@@ -134,15 +133,19 @@ button:hover {
 .dropdown {
   display: none;
   position: absolute;
+  top: 100%;         /* Justo debajo del botón */
+  left: 10%;         /* Centrado con respecto al botón */
+  transform: translateX(-50%); /* Ajusta al centro exacto */
   background: #fffaf3;
   border: 1px solid #ddd;
   border-radius: 10px;
   list-style: none;
-  margin: 5px 0 0 0;
+  margin: 8px 0 0 0;
   padding: 10px;
   box-shadow: 0 6px 12px rgba(0,0,0,0.15);
   z-index: 10;
 }
+
 
 .dropdown li {
   display: flex;
