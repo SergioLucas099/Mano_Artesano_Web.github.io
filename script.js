@@ -50,12 +50,11 @@ btnConsultar.addEventListener("click", async () => {
           encontrado = true;
           resultado.style.display = "block";
           resultado.innerHTML = `
-            ✅ Atracción: <span>${datos.Atraccion}</span><br>
+            🏞️ Atracción: <span>${datos.Atraccion}</span><br>
             🎟️ Tu turno es: <span>${datos.TurnoAsignado}</span><br>
             👥 Personas: <span>${datos.NumeroPersonas}</span><br>
             ⏳ Tiempo de espera: <span>${datos.TiempoEspera}</span><br>
-            ⏳ Valor prueba: <span>${datos.NumeroTelefonico}</span><br>
-            ⏳ Valor prueba: <span>${datos.Estado}</span><br>
+            👀 Estado: <span>${datos.Estado}</span><br>
           `;
         }
       });
