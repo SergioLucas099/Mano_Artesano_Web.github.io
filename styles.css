@@ -28,12 +28,13 @@ header {
   text-align: center;
   margin-bottom: 20px;
 }
+
 header .logo img {
-  max-width: 120px;
-  border-radius: 10%;
+  max-width: 100px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   margin-bottom: 10px;
 }
+
 header .bienvenida {
   font-size: 1.2em;
   color: #5a3e2b;
@@ -44,18 +45,46 @@ header .bienvenida {
 /* === Contenedor principal === */
 .contenedor {
   background: #fffaf3;
-  padding: 25px;
+  padding: 15px;
   border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 10px rgba(0,0,0,0.25);
   text-align: center;
   width: 100%;
   max-width: 400px;
   box-sizing: border-box;
 }
-h2 {
+
+.contenedor h2 {
+  margin-top: 0;
   margin-bottom: 20px;
   color: #6b4226;
-  font-size: 1.8em;
+  font-size: 1.5em;
+}
+
+.contenedor_lista {
+  background: #fffaf3;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 8px 10px rgba(0,0,0,0.25);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  margin-top: 20px;
+}
+
+.contenedor_lista h2{
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #6b4226;
+  font-size: 1.5em;
+}
+
+.contenedor_lista p{
+  font-size: 1.2em;
+  color: #3a6c64;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 /* === Inputs y botones === */
@@ -67,10 +96,12 @@ button {
   font-size: 1em;
   box-sizing: border-box;
 }
+
 input[type="tel"] {
   border: 2px solid #d4a373;
   margin-bottom: 15px;
 }
+
 button {
   background: #a0522d;
   color: white;
@@ -79,6 +110,7 @@ button {
   font-size: 1.1em;
   transition: background 0.3s ease, transform 0.2s;
 }
+
 button:hover {
   background: #8b3e2f;
   transform: translateY(-2px);

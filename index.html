@@ -11,7 +11,7 @@
   <!-- Header -->
 <header>
   <div class="logo">
-    <img src="img/logo.jpeg" alt="Logo Pueblito de Barro">
+    <img src="img/logo.png" alt="Logo Pueblito de Barro">
   </div>
   <div class="bienvenida" id="bienvenida">
     Bienvenidos al <strong>Pueblito de Barro</strong><br>
@@ -38,7 +38,7 @@
 
   <!-- Contenedor principal -->
   <main class="contenedor">
-    <h2>Consulta tu Turno</h2>
+    <h2 id="txtConsultaTurno">Consulta tu Turno</h2>
     <input 
       type="tel" 
       id="numero" 
@@ -49,6 +49,11 @@
 
     <button id="consultar">Consultar</button>
     <div class="resultado" id="resultado"></div>
+  </main>
+
+  <main class="contenedor_lista">
+    <h2 id="txtTurnoActual">Turnos Actuales</h2>
+    <p id="turno"></p>
   </main>
 
   <!-- Firebase y lógica -->

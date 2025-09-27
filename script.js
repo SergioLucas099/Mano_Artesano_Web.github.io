@@ -1,7 +1,7 @@
 // Importar librerías necesarias
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
-import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+import { getDatabase, ref, get, child, onValue } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
 // Configuración de Firebase
 const firebaseConfig = {
@@ -25,6 +25,7 @@ const translations = {
   es: {
     bienvenida: "Bienvenidos al <strong>Pueblito de Barro</strong><br>Aquí podrá consultar sus turnos",
     titulo: "Consulta tu Turno",
+    tituloTurno: "Turnos Actuales",
     placeholder: "Ingrese su número de celular:",
     boton: "Consultar",
     mensajes: {
@@ -47,6 +48,7 @@ const translations = {
   en: {
     bienvenida: "Welcome to <strong>Pueblito de Barro</strong><br>Here you can check your turns",
     titulo: "Check your Turn",
+    tituloTurno: "Current Number",
     placeholder: "Enter your phone number:",
     boton: "Check",
     mensajes: {
@@ -69,6 +71,7 @@ const translations = {
   pt: {
     bienvenida: "Bem-vindos ao <strong>Pueblito de Barro</strong><br>Aqui você pode consultar seus turnos",
     titulo: "Consulte seu Turno",
+    tituloTurno: "Senhas Atuais",
     placeholder: "Digite seu número de celular:",
     boton: "Consultar",
     mensajes: {
@@ -91,6 +94,7 @@ const translations = {
   fr: {
     bienvenida: "Bienvenue au <strong>Pueblito de Barro</strong><br>Ici, vous pouvez consulter vos tours",
     titulo: "Consultez votre Tour",
+    tituloTurno: "Numéros Actuels",
     placeholder: "Entrez votre numéro de téléphone:",
     boton: "Consulter",
     mensajes: {
@@ -113,6 +117,7 @@ const translations = {
   it: {
     bienvenida: "Benvenuti a <strong>Pueblito de Barro</strong><br>Qui puoi controllare i tuoi turni",
     titulo: "Controlla il tuo Turno",
+    tituloTurno: "Numeri Attuali",
     placeholder: "Inserisci il tuo numero di telefono:",
     boton: "Controlla",
     mensajes: {
@@ -135,6 +140,7 @@ const translations = {
   de: {
     bienvenida: "Willkommen im <strong>Pueblito de Barro</strong><br>Hier können Sie Ihre Termine überprüfen",
     titulo: "Überprüfen Sie Ihren Termin",
+    tituloTurno: "Aktuelle Nummern",
     placeholder: "Geben Sie Ihre Telefonnummer ein:",
     boton: "Überprüfen",
     mensajes: {
@@ -157,6 +163,7 @@ const translations = {
   ko: {
     bienvenida: "<strong>Pueblito de Barro</strong>에 오신 것을 환영합니다<br>여기서 차례를 확인할 수 있습니다",
     titulo: "차례 확인",
+    tituloTurno: "현재 순번",
     placeholder: "전화번호를 입력하세요:",
     boton: "확인",
     mensajes: {
@@ -179,6 +186,7 @@ const translations = {
   ja: {
     bienvenida: "<strong>Pueblito de Barro</strong>へようこそ<br>ここで順番を確認できます",
     titulo: "順番を確認する",
+    tituloTurno: "現在の番号",
     placeholder: "電話番号を入力してください:",
     boton: "確認",
     mensajes: {
@@ -201,6 +209,7 @@ const translations = {
   zh: {
     bienvenida: "欢迎来到 <strong>Pueblito de Barro</strong><br>在这里您可以查询您的顺序",
     titulo: "查询您的顺序",
+    tituloTurno: "当前号码",
     placeholder: "请输入您的电话号码：",
     boton: "查询",
     mensajes: {
@@ -223,6 +232,7 @@ const translations = {
   ru: {
     bienvenida: "Добро пожаловать в <strong>Pueblito de Barro</strong><br>Здесь вы можете проверить свою очередь",
     titulo: "Проверьте свою очередь",
+    tituloTurno: "Текущие номера",
     placeholder: "Введите свой номер телефона:",
     boton: "Проверить",
     mensajes: {
@@ -244,11 +254,13 @@ const translations = {
   }
 };
 
+
 // === Elementos del DOM ===
 const currentLang = document.getElementById("currentLang");
 const langDropdown = document.getElementById("langDropdown");
 const bienvenida = document.getElementById("bienvenida");
-const titulo = document.querySelector("h2");
+const titulo = document.getElementById("txtConsultaTurno");
+const turnosActuales = document.getElementById("txtTurnoActual");
 const inputNumero = document.getElementById("numero");
 const btnConsultar = document.getElementById("consultar");
 const resultado = document.getElementById("resultado");
@@ -269,6 +281,7 @@ langDropdown.querySelectorAll("li").forEach(item => {
 
     bienvenida.innerHTML = t.bienvenida;
     titulo.textContent = t.titulo;
+    turnosActuales.textContent = t.tituloTurno;
     inputNumero.placeholder = t.placeholder;
     btnConsultar.textContent = t.boton;
     currentLang.src = item.querySelector("img").src;
@@ -334,4 +347,12 @@ btnConsultar.addEventListener("click", async () => {
     resultado.style.display = "block";
     resultado.innerHTML = t.mensajes.error;
   }
+});
+
+const turnoRef = ref(db, "TurnosActualesAtracciones/Mano Del Artesano");
+
+// Escuchar cambios
+onValue(turnoRef, (snapshot) => {
+  const turno = snapshot.val();
+  document.getElementById("turno").innerText = `Mano Del Artesano: ${turno}`;
 });
