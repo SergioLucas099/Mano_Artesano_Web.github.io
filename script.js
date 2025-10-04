@@ -302,8 +302,9 @@ btnConsultar.addEventListener("click", async () => {
   }
 
   try {
+
     const dbRef = ref(db);
-    const snapshot = await get(child(dbRef, "TurnosEnEspera"));
+    const snapshot = await get(child(dbRef, "TurnosAcumulados"));
 
     if (snapshot.exists()) {
       let encontrado = false;
