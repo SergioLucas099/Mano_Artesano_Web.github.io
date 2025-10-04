@@ -295,14 +295,7 @@ btnConsultar.addEventListener("click", async () => {
   const numero = inputNumero.value.trim();
   const t = translations[currentLanguage];
 
-  if (!/^[0-9]{10}$/.test(numero)) {
-    resultado.style.display = "block";
-    resultado.innerHTML = t.mensajes.invalido;
-    return;
-  }
-
   try {
-
     const dbRef = ref(db);
     const snapshot = await get(child(dbRef, "TurnosAcumulados"));
 
@@ -311,7 +304,7 @@ btnConsultar.addEventListener("click", async () => {
 
       snapshot.forEach(childSnap => {
         const datos = childSnap.val();
-        if (datos.NumeroTelefonico === numero) {
+        if (datos.NumeroTelefonico === numero || datos.TurnoAsignado.includes(numero)) {
           encontrado = true;
 
           // Diccionario de traducciones para Estado
@@ -328,7 +321,7 @@ btnConsultar.addEventListener("click", async () => {
             ${t.labels.atraccion}: <span>${datos.Atraccion}</span><br>
             ${t.labels.turno}: <span>${datos.TurnoAsignado}</span><br>
             ${t.labels.personas}: <span>${datos.NumeroPersonas}</span><br>
-            ${t.labels.espera}: <span>${datos.TiempoEspera}</span><br>
+            ${t.labels.espera}: <span>${datos.TiempoEspera}</span> min<br>
             ${t.labels.estado}: <span>${estadoTraducido}</span><br>
           `;
         }
