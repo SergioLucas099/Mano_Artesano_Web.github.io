@@ -290,19 +290,29 @@ langDropdown.querySelectorAll("li").forEach(item => {
   });
 });
 
-// === Consulta de turnos ===
-btnConsultar.addEventListener("click", async () => {
+// === Función para formatear el tiempo ===
+function formatearTiempo(tiempo) {
+  if (!tiempo) return "—"; // Si está vacío o undefined
+  const [min, seg] = tiempo.split(":").map(Number);
+  if (min === 0) {
+    return `${seg} seg`;
+  } else {
+    return `${min} min`;
+  }
+}
+
+// === Consulta de turnos en tiempo real ===
+btnConsultar.addEventListener("click", () => {
   const numero = inputNumero.value.trim();
   const t = translations[currentLanguage];
+  const turnosRef = ref(db, "TurnosAcumulados");
 
-  try {
-    const dbRef = ref(db);
-    const snapshot = await get(child(dbRef, "TurnosAcumulados"));
-
+  // Escuchar cambios en tiempo real
+  onValue(turnosRef, (snapshot) => {
     if (snapshot.exists()) {
       let encontrado = false;
 
-      snapshot.forEach(childSnap => {
+      snapshot.forEach((childSnap) => {
         const datos = childSnap.val();
         if (datos.NumeroTelefonico === numero || datos.TurnoAsignado.includes(numero)) {
           encontrado = true;
@@ -321,12 +331,11 @@ btnConsultar.addEventListener("click", async () => {
             ${t.labels.atraccion}: <span>${datos.Atraccion}</span><br>
             ${t.labels.turno}: <span>${datos.TurnoAsignado}</span><br>
             ${t.labels.personas}: <span>${datos.NumeroPersonas}</span><br>
-            ${t.labels.espera}: <span>${datos.TiempoEspera}</span> min<br>
+            ${t.labels.espera}: <span>${formatearTiempo(datos.TiempoEspera)}</span><br>
             ${t.labels.estado}: <span>${estadoTraducido}</span><br>
           `;
         }
       });
-
 
       if (!encontrado) {
         resultado.style.display = "block";
@@ -336,11 +345,9 @@ btnConsultar.addEventListener("click", async () => {
       resultado.style.display = "block";
       resultado.innerHTML = t.mensajes.noTurnos;
     }
-  } catch (error) {
-    console.error(error);
-    resultado.style.display = "block";
-    resultado.innerHTML = t.mensajes.error;
-  }
+  }, {
+    onlyOnce: false // Importante: mantiene la escucha activa
+  });
 });
 
 const turnoRef = ref(db, "TurnosActualesAtracciones/Mano Del Artesano");
