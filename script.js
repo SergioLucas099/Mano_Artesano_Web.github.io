@@ -241,6 +241,8 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 let ultimoBusqueda = null;
 let unsubscribeBusqueda = null;
+let turnosProximosNotificados = new Set();
+let turnosLlamadosNotificados = new Set();
 
 const langDropdown = document.getElementById("langDropdown");
 const audioTurno = new Audio("audio/turno.mp3");
@@ -311,10 +313,8 @@ function estadoTurno(turno) {
 }
 
 // ================== CONSULTA ==================
-document.getElementById("consultar").addEventListener("click", async () => {
+document.getElementById("consultar").addEventListener("click", () => {
   const numero = document.getElementById("numero").value.trim();
-  const resultado = document.getElementById("resultado");
-  const t = textos[idiomaActual];
 
   if (!numero) {
     alert("Ingrese un número");
@@ -323,74 +323,10 @@ document.getElementById("consultar").addEventListener("click", async () => {
 
   ultimoBusqueda = numero;
 
-  escucharBusquedaTiempoReal();
-
-  resultado.style.display = "block";
-  resultado.innerHTML = t.buscando;
-
-  try {
-    const snapshot = await get(ref(db, "turnos"));
-
-    if (snapshot.exists()) {
-      let encontrados = [];
-
-      snapshot.forEach(atraccion => {
-        atraccion.forEach(turno => {
-          const data = turno.val();
-
-          const inputTel = normalizarTelefono(numero);
-          const inputTurno = normalizarTurno(numero);
-
-          const telDB = normalizarTelefono(data.telefono);
-          const turnoDB = normalizarTurno(data.numeroTurno);
-
-          if (telDB === inputTel || turnoDB === inputTurno) {
-            encontrados.push(data);
-
-            // 🔊 SONIDO AUTOMÁTICO
-            if (
-              data.estado !== "FINALIZADO" &&
-              data.tiempoEspera <= 0 &&
-              !turnosNotificados.has(data.numeroTurno)
-            ) {
-              audioTurno.play().catch(() => {});
-              turnosNotificados.add(data.numeroTurno);
-
-              hablarTurno(data.numeroTurno);
-
-              vibrarDispositivo();
-
-              turnosNotificados.add(data.numeroTurno);
-            }
-          }
-        });
-      });
-
-      if (encontrados.length > 0) {
-        resultado.innerHTML = encontrados.map(data => `
-          <p>
-            ${t.turno}: <span>${data.numeroTurno}</span><br>
-            ${t.atraccion}: <span>${data.nombreAtraccion}</span><br>
-            ${t.telefono}: <span>${data.telefono}</span><br>
-            ${t.espera}: <span>${formatearTiempo(data.tiempoEspera)}</span><br>
-            <strong>${estadoTurno(data)}</strong>
-          </p>
-        `).join("");
-      } else {
-        resultado.innerHTML = t.noEncontrado;
-      }
-
-    } else {
-      resultado.innerHTML = "⚠️ No hay datos";
-    }
-
-  } catch (error) {
-    console.error(error);
-    resultado.innerHTML = t.error;
-  }
-
-  ultimoBusqueda = numero;
   turnosNotificados.clear();
+  turnosProximosNotificados.clear();
+  turnosLlamadosNotificados.clear();
+
   escucharBusquedaTiempoReal();
 });
 
@@ -423,25 +359,54 @@ function escucharBusquedaTiempoReal() {
         const turnoDB = normalizarTurno(data.numeroTurno);
 
         if (telDB === inputTel || turnoDB === inputTurno) {
+
           encontrados.push(data);
 
-          // 🔊 SONIDO AUTOMÁTICO
+          // ================== 🔊 PRIORIDAD 1: LLAMADO ==================
+          if (
+            data.estado === "LLAMADO" &&
+            !turnosLlamadosNotificados.has(data.numeroTurno)
+          ) {
+            audioTurno.play().catch(() => {});
+            hablarLlamado(data.numeroTurno);
+            vibrarDispositivo();
+
+            turnosLlamadosNotificados.add(data.numeroTurno);
+            return; // 🔥 evita que entre a otras condiciones
+          }
+
+          // ================== 🔊 PRIORIDAD 2: YA TE TOCA ==================
           if (
             data.estado !== "FINALIZADO" &&
             data.tiempoEspera <= 0 &&
             !turnosNotificados.has(data.numeroTurno)
           ) {
             audioTurno.play().catch(() => {});
-            turnosNotificados.add(data.numeroTurno);
-
             hablarTurno(data.numeroTurno);
             vibrarDispositivo();
 
             turnosNotificados.add(data.numeroTurno);
+            return;
+          }
+
+          // ================== 🔊 PRIORIDAD 3: PRÓXIMO ==================
+          if (
+            data.estado === "ESPERA" &&
+            data.tiempoEspera > 0 &&
+            data.tiempoEspera <= 300 &&
+            !turnosProximosNotificados.has(data.numeroTurno)
+          ) {
+            audioTurno.play().catch(() => {});
+            hablarProximo(data.numeroTurno);
+
+            turnosProximosNotificados.add(data.numeroTurno);
           }
         }
       });
     });
+
+    const resultado = document.getElementById("resultado");
+    const t = textos[idiomaActual];
 
     if (encontrados.length > 0) {
       resultado.innerHTML = encontrados.map(data => `
@@ -479,6 +444,40 @@ function escucharTurnosAprobados() {
 
     contenedor.innerHTML = lista.join("<br>");
   });
+}
+
+function hablarProximo(numeroTurno) {
+  let mensaje = "";
+
+  if (idiomaActual === "es") {
+    mensaje = `Turno ${numeroTurno}, estás próximo a ser llamado, por favor acércate a tu atracción`;
+  } else if (idiomaActual === "en") {
+    mensaje = `Turn ${numeroTurno}, you are about to be called, please get closer to your attraction`;
+  } else {
+    mensaje = `Turno ${numeroTurno}`;
+  }
+
+  const speech = new SpeechSynthesisUtterance(mensaje);
+  speech.lang = idiomaActual === "en" ? "en-US" : "es-ES";
+
+  window.speechSynthesis.speak(speech);
+}
+
+function hablarLlamado(numeroTurno) {
+  let mensaje = "";
+
+  if (idiomaActual === "es") {
+    mensaje = `Turno ${numeroTurno}, estás siendo llamado a la atracción, por favor acércate`;
+  } else if (idiomaActual === "en") {
+    mensaje = `Turn ${numeroTurno}, you are being called, please proceed to the attraction`;
+  } else {
+    mensaje = `Turno ${numeroTurno}`;
+  }
+
+  const speech = new SpeechSynthesisUtterance(mensaje);
+  speech.lang = idiomaActual === "en" ? "en-US" : "es-ES";
+
+  window.speechSynthesis.speak(speech);
 }
 
 // ================== INICIO ==================
