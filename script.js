@@ -59,7 +59,7 @@ const textos = {
   es: {
     bienvenida: "Bienvenidos al <strong>Pueblito de Barro</strong><br>Aquí podrá consultar sus turnos",
     consulta: "Consulta tu Turno",
-    placeholder: "Ingrese su número de celular:",
+    placeholder: "Ingrese su número de turno o celular:",
     boton: "Consultar",
     turnoActual: "Turnos Actuales",
     buscando: "Buscando... ⏳",
