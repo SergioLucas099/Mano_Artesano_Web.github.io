@@ -364,7 +364,7 @@ function escucharBusquedaTiempoReal() {
 
           // ================== 🔊 PRIORIDAD 1: LLAMADO ==================
           if (
-            data.estado === "LLAMADO" &&
+            data.llamandoTurno === true &&
             !turnosLlamadosNotificados.has(data.numeroTurno)
           ) {
             audioTurno.play().catch(() => {});
@@ -372,7 +372,10 @@ function escucharBusquedaTiempoReal() {
             vibrarDispositivo();
 
             turnosLlamadosNotificados.add(data.numeroTurno);
-            return; // 🔥 evita que entre a otras condiciones
+            return;
+          }
+          if (data.llamandoTurno !== true) {
+            turnosLlamadosNotificados.delete(data.numeroTurno);
           }
 
           // ================== 🔊 PRIORIDAD 2: YA TE TOCA ==================
