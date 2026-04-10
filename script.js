@@ -1,12 +1,37 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+import { set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSy...",
   authDomain: "gestion-turnos-mano-artesano.firebaseapp.com",
   databaseURL: "https://gestion-turnos-mano-artesano-default-rtdb.firebaseio.com",
-  projectId: "gestion-turnos-mano-artesano"
+  projectId: "gestion-turnos-mano-artesano",
+  storageBucket: "gestion-turnos-mano-artesano.firebasestorage.app",
+  messagingSenderId: "141305011827",
+  appId: "1:141305011827:web:97530af4a95d105e535406"
 };
+
+onMessage(messaging, (payload) => {
+  console.log("📩 Notificación en primer plano:", payload);
+
+  alert(payload.notification.title + "\n" + payload.notification.body);
+});
+
+function guardarTokenEnFirebase(token) {
+  const numero = document.getElementById("numero").value.trim();
+
+  if (!numero) return;
+
+  const numeroNormalizado = numero.replace(/\s+/g, "");
+
+  set(ref(db, "tokens/" + numeroNormalizado), {
+    token: token,
+    fecha: new Date().toISOString()
+  });
+}
 
 function hablarTurno(numeroTurno) {
   const t = textos[idiomaActual];
@@ -77,7 +102,7 @@ const textos = {
   en: {
     bienvenida: "Welcome to <strong>Pueblito de Barro</strong><br>Check your turns here",
     consulta: "Check your Turn",
-    placeholder: "Enter your phone number:",
+    placeholder: "Enter your ticket number or mobile phone number:",
     boton: "Search",
     turnoActual: "Current Turns",
     buscando: "Searching... ⏳",
@@ -95,7 +120,7 @@ const textos = {
   pt: {
     bienvenida: "Bem-vindos ao <strong>Pueblito de Barro</strong><br>Aqui você pode consultar seus turnos",
     consulta: "Consultar seu turno",
-    placeholder: "Digite seu número de celular:",
+    placeholder: "Insira seu número de senha ou celular:",
     boton: "Consultar",
     turnoActual: "Turnos Atuais",
     buscando: "Buscando... ⏳",
@@ -113,7 +138,7 @@ const textos = {
   fr: {
     bienvenida: "Bienvenue au <strong>Pueblito de Barro</strong><br>Ici vous pouvez consulter vos tours",
     consulta: "Consultez votre tour",
-    placeholder: "Entrez votre numéro de téléphone:",
+    placeholder: "Entrez votre numéro de ticket ou de téléphone portable:",
     boton: "Consulter",
     turnoActual: "Tours actuels",
     buscando: "Recherche... ⏳",
@@ -131,7 +156,7 @@ const textos = {
   it: {
     bienvenida: "Benvenuti al <strong>Pueblito de Barro</strong><br>Qui puoi controllare i tuoi turni",
     consulta: "Controlla il tuo turno",
-    placeholder: "Inserisci il tuo numero di telefono:",
+    placeholder: "Inserisci il numero del tuo turno o del cellulare:",
     boton: "Cerca",
     turnoActual: "Turni attuali",
     buscando: "Ricerca... ⏳",
@@ -149,7 +174,7 @@ const textos = {
   de: {
     bienvenida: "Willkommen im <strong>Pueblito de Barro</strong><br>Hier können Sie Ihre Warteschlange überprüfen",
     consulta: "Überprüfen Sie Ihren Turn",
-    placeholder: "Geben Sie Ihre Telefonnummer ein:",
+    placeholder: "Geben Sie Ihre Ticketnummer oder Handynummer ein:",
     boton: "Suchen",
     turnoActual: "Aktuelle Turns",
     buscando: "Suche... ⏳",
@@ -167,7 +192,7 @@ const textos = {
   ko: {
     bienvenida: "<strong>Pueblito de Barro</strong>에 오신 것을 환영합니다<br>여기에서 순서를 확인하세요",
     consulta: "내 순서 확인",
-    placeholder: "전화번호를 입력하세요:",
+    placeholder: "대기 번호 또는 휴대폰 번호를 입력하세요:",
     boton: "조회",
     turnoActual: "현재 순서",
     buscando: "검색 중... ⏳",
@@ -185,7 +210,7 @@ const textos = {
   ja: {
     bienvenida: "<strong>Pueblito de Barro</strong>へようこそ<br>ここで順番を確認できます",
     consulta: "順番を確認",
-    placeholder: "電話番号を入力してください:",
+    placeholder: "順番番号または携帯電話番号を入力してください:",
     boton: "検索",
     turnoActual: "現在の順番",
     buscando: "検索中... ⏳",
@@ -203,7 +228,7 @@ const textos = {
   zh: {
     bienvenida: "欢迎来到<strong>Pueblito de Barro</strong><br>在这里查询您的排队信息",
     consulta: "查询您的排队",
-    placeholder: "请输入您的手机号:",
+    placeholder: "请输入您的排队号码或手机号码:",
     boton: "查询",
     turnoActual: "当前排队",
     buscando: "查询中... ⏳",
@@ -221,7 +246,7 @@ const textos = {
   ru: {
     bienvenida: "Добро пожаловать в <strong>Pueblito de Barro</strong><br>Здесь вы можете проверить свою очередь",
     consulta: "Проверить очередь",
-    placeholder: "Введите номер телефона:",
+    placeholder: "Введите номер вашей очереди или номер мобильного телефона:",
     boton: "Поиск",
     turnoActual: "Текущие очереди",
     buscando: "Поиск... ⏳",
@@ -238,6 +263,18 @@ const textos = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log('✅ Service Worker registrado:', registration);
+    })
+    .catch((error) => {
+      console.error('❌ Error registrando SW:', error);
+    });
+}
+
+const messaging = getMessaging(app);
 const db = getDatabase(app);
 let ultimoBusqueda = null;
 let unsubscribeBusqueda = null;
@@ -328,6 +365,7 @@ document.getElementById("consultar").addEventListener("click", () => {
   turnosLlamadosNotificados.clear();
 
   escucharBusquedaTiempoReal();
+  activarNotificaciones();
 });
 
 function escucharBusquedaTiempoReal() {
@@ -486,3 +524,28 @@ function hablarLlamado(numeroTurno) {
 // ================== INICIO ==================
 aplicarIdioma();
 escucharTurnosAprobados();
+
+async function activarNotificaciones() {
+  try {
+    const permiso = await Notification.requestPermission();
+
+    if (permiso === "granted") {
+      console.log("Permiso concedido 🔔");
+
+      const token = await getToken(messaging, {
+        vapidKey: "BLjiniq62W-3prbmM476IFdq96S46QGWDiLoU9Y4fMtFb7cV7dUVqVkXPhmKI70gY7SXS1tIw0l3PCEHrCry2NQ"
+      });
+
+      console.log("TOKEN:", token);
+
+      // 🔥 AQUÍ está la clave
+      guardarTokenEnFirebase(token);
+
+    } else {
+      console.log("Permiso denegado ❌");
+    }
+
+  } catch (error) {
+    console.error("Error obteniendo token:", error);
+  }
+}
