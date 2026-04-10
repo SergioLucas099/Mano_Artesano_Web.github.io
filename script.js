@@ -5,7 +5,7 @@ import { set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-databas
 import { onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSy...",
+  apiKey: "AIzaSyDJ-K-AI2q-mPsDGaCMFrMLTn-lFSBd9LQ",
   authDomain: "gestion-turnos-mano-artesano.firebaseapp.com",
   databaseURL: "https://gestion-turnos-mano-artesano-default-rtdb.firebaseio.com",
   projectId: "gestion-turnos-mano-artesano",
@@ -13,12 +13,6 @@ const firebaseConfig = {
   messagingSenderId: "141305011827",
   appId: "1:141305011827:web:97530af4a95d105e535406"
 };
-
-onMessage(messaging, (payload) => {
-  console.log("📩 Notificación en primer plano:", payload);
-
-  alert(payload.notification.title + "\n" + payload.notification.body);
-});
 
 function guardarTokenEnFirebase(token) {
   const numero = document.getElementById("numero").value.trim();
@@ -276,6 +270,15 @@ if ('serviceWorker' in navigator) {
 
 const messaging = getMessaging(app);
 const db = getDatabase(app);
+
+// ✅ AHORA SÍ AQUÍ
+onMessage(messaging, (payload) => {
+  console.log("📩 Notificación en primer plano:", payload);
+
+  alert(payload.notification.title + "\n" + payload.notification.body);
+});
+
+
 let ultimoBusqueda = null;
 let unsubscribeBusqueda = null;
 let turnosProximosNotificados = new Set();
@@ -365,7 +368,7 @@ document.getElementById("consultar").addEventListener("click", () => {
   turnosLlamadosNotificados.clear();
 
   escucharBusquedaTiempoReal();
-  activarNotificaciones();
+  activarNotificaciones().catch(() => {});
 });
 
 function escucharBusquedaTiempoReal() {
