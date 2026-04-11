@@ -17,8 +17,39 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log("📩 Notificación recibida:", payload);
 
-  self.registration.showNotification(payload.notification.title, {
-    body: payload.notification.body,
-    icon: "/img/logo.png"
+  const title = payload.notification?.title || "Notificación";
+  const body = payload.notification?.body || "Tienes una actualización";
+
+  // 🔥 Diferenciar tipo
+  const tipo = payload.data?.tipo || "general";
+
+  self.registration.showNotification(title, {
+    body: body,
+    icon: "/img/logo.png",
+    vibrate: [200, 100, 200, 100, 200],
+    requireInteraction: true,
+    tag: "turno-llamado",
+
+    // 🔥 AQUÍ
+    data: payload.data
   });
+});
+
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+
+    event.waitUntil(
+      self.addEventListener('notificationclick', function(event) {
+      event.notification.close();
+
+      const turno = event.notification.data?.turno || "";
+      const atraccion = event.notification.data?.atraccion || "";
+
+      const url = `/?turno=${turno}&atraccion=${encodeURIComponent(atraccion)}`;
+
+      event.waitUntil(
+        clients.openWindow(url)
+      );
+    })
+  );
 });

@@ -552,3 +552,37 @@ async function activarNotificaciones() {
     console.error("Error obteniendo token:", error);
   }
 }
+
+function hablar(texto) {
+  const speech = new SpeechSynthesisUtterance(texto);
+  speech.lang = "es-ES";
+  speech.volume = 1;
+  speech.rate = 1;
+  speech.pitch = 1;
+
+  speechSynthesis.speak(speech);
+}
+
+window.addEventListener("load", () => {
+
+  const params = new URLSearchParams(window.location.search);
+
+  const turno = params.get("turno");
+  const atraccion = params.get("atraccion");
+
+  if (turno && atraccion) {
+
+    const mensaje = `Turno ${turno}, estás siendo llamado a la atracción ${atraccion}, por favor acércate`;
+
+    hablar(mensaje);
+  }
+
+  if (turno && atraccion && !sessionStorage.getItem("yaHablo")) {
+
+    const mensaje = `Turno ${turno}, estás siendo llamado a la atracción ${atraccion}, por favor acércate`;
+
+    hablar(mensaje);
+
+    sessionStorage.setItem("yaHablo", "true");
+  }
+});
