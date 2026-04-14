@@ -354,11 +354,25 @@ function estadoTurno(turno) {
 
 // ================== CONSULTA ==================
 document.getElementById("consultar").addEventListener("click", () => {
-  const numero = document.getElementById("numero").value.trim();
+  let numero = document.getElementById("numero").value.trim();
 
   if (!numero) {
     alert("Ingrese un número");
     return;
+  }
+
+  numero = numero.replace(/\s+/g, "");
+
+  if (!numero.startsWith("+")) {
+    if (numero.startsWith("57")) {
+      numero = "+" + numero;
+    } 
+    else if (numero.length === 10) {
+      numero = "+57" + numero;
+    }
+    else {
+      numero = "+" + numero;
+    }
   }
 
   ultimoBusqueda = numero;
