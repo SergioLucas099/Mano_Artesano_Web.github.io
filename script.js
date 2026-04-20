@@ -363,15 +363,16 @@ document.getElementById("consultar").addEventListener("click", () => {
 
   numero = numero.replace(/\s+/g, "");
 
-  if (!numero.startsWith("+")) {
-    if (numero.startsWith("57")) {
-      numero = "+" + numero;
-    } 
-    else if (numero.length === 10) {
-      numero = "+57" + numero;
-    }
-    else {
-      numero = "+" + numero;
+  const soloNumeros = /^\d+$/.test(numero);
+
+  // Solo formatear si parece teléfono
+  if (soloNumeros && numero.length >= 7) {
+    if (!numero.startsWith("+")) {
+      if (numero.startsWith("57")) {
+        numero = "+" + numero;
+      } else if (numero.length === 10) {
+        numero = "+57" + numero;
+      }
     }
   }
 
